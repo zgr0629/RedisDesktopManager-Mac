@@ -4,7 +4,7 @@ This repository provides a shell can compile [RedisDesktopManager](https://githu
 
 Latest version: 2020.3
 
-![screenshots](/Users/gary/OneDrive/CSV/RedisDesktopManager-Mac/screenshots.png)
+![screenshots](https://raw.githubusercontent.com/zgr0629/RedisDesktopManager-Mac/master/screenshots.png)
 
 ## Install
 
