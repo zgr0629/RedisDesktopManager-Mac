@@ -19,3 +19,5 @@ Install python packages
 ```shell
 pip3 install -r https://raw.githubusercontent.com/uglide/RedisDesktopManager/2020/src/py/requirements.txt --upgrade
 ```
+
+Download latest DMG file from [release](https://github.com/zgr0629/RedisDesktopManager-Mac/releases) page. Load Dmg file and drag .app file to your Application folder.
