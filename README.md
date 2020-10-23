@@ -2,9 +2,7 @@
 
 This repository provides a shell can compile [RedisDesktopManager](https://github.com/uglide/RedisDesktopManager), as well as a compiled DMG file.
 
-Latest version: 2020.4
-
-> build on tag 2020.4 with cherry picked commit [6a635b6](https://github.com/uglide/RedisDesktopManager/commit/6a635b624c2a24c98b973b7c1e7729b4d8c98976).
+Latest version: 2020.5
 
 ![screenshots](https://raw.githubusercontent.com/zgr0629/RedisDesktopManager-Mac/master/screenshots.png)
 
