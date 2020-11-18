@@ -269,7 +269,7 @@ jobs:
       id: build
       run: |
         python ./rdm/build/utils/set_version.py ${{ env.VERSION }} > ./rdm/src/version.h
-        sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ env.VERSION }}/" rdm.pro
+        sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ env.VERSION }}/" ./rdm/src/rdm.pro
         cd rdm/src
         qmake rdm.pro CONFIG-=debug
         make -s -j 8
