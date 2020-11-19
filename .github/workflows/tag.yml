@@ -96,7 +96,8 @@ jobs:
     - name: Load Variables
       run: |
         # Load variables from file
-        echo "VERSION='type ${{ env.VERSION_FILE }}'" >> $GITHUB_ENV
+        set vs='type ${{ env.VERSION_FILE }}'
+        echo "VERSION=%vs%" >> %GITHUB_ENV%
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
