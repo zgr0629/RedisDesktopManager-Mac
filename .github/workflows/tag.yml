@@ -86,19 +86,19 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Download variables file
-        uses: actions/download-artifact@v2
-        with:
-          name: variables
+    - name: Download variables file
+      uses: actions/download-artifact@v2
+      with:
+        name: variables
 
-      - name: Display structure of downloaded files
-        run: ls -R
+    - name: Display structure of downloaded files
+      run: ls -R
 
-      - name: Load Variables
-        run: |
-          # Load variables from file
-          VERSION=$(cat "${{ env.FILE }}" | grep -o "VERSION=.*" | head -n 1 | sed 's/VERSION=//g')
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Load Variables
+      run: |
+        # Load variables from file
+        VERSION=$(cat "${{ env.FILE }}" | grep -o "VERSION=.*" | head -n 1 | sed 's/VERSION=//g')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
