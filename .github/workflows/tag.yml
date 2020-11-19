@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  FILE: "variables.ini"
+  VERSION_FILE: "version.ini"
   PYTHON_EMBEDDED_VERSION: 3.7.9
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -34,14 +34,14 @@ jobs:
       - name: Save Variables to file
         run: |
           # SAVE variables to file
-          echo "VERSION=${{ steps.rdm.outputs.tag }}" > "${{ env.FILE }}"
+          echo "${{ steps.rdm.outputs.tag }}" > "${{ env.VERSION_FILE }}"
           echo "VERSION=${{ steps.rdm.outputs.tag }}" >> $GITHUB_ENV
 
       - name: Upload file
         uses: actions/upload-artifact@v2
         with:
           name: variables
-          path: ${{ env.FILE }}
+          path: ${{ env.VERSION_FILE }}
 
       # - name: checkout
       #   uses: actions/checkout@v2
@@ -67,7 +67,7 @@ jobs:
           body: |
             ${{ env.VERSION }}
           draft: false
-          prerelease: true
+          prerelease: false
 
   build_on_windows:
     needs: create_release
@@ -97,7 +97,7 @@ jobs:
     - name: Load Variables
       run: |
         # Load variables from file
-        VERSION=$(cat "${{ env.FILE }}" | grep -o "VERSION=.*" | head -n 1 | sed 's/VERSION=//g')
+        set VERSION='type "${{ env.VERSION_FILE }}"'
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -237,8 +237,7 @@ jobs:
     - name: Load Variables
       run: |
         # Load variables from file
-        VERSION=$(cat "${{ env.FILE }}" | grep -o "VERSION=.*" | head -n 1 | sed 's/VERSION=//g')
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        echo "VERSION=$(cat "${{ env.VERSION_FILE }}")" >> $GITHUB_ENV
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
