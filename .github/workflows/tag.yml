@@ -32,7 +32,7 @@ jobs:
         id: rdm  # The step ID to refer to later.
 
       - run: |
-          env.RDM_REF=steps.rdm.outputs.tag
+          env.RDM_REF=${{ steps.rdm.outputs.tag }}
           echo "RDM is at version ${{ env.RDM_REF }}"
 
       # - name: checkout
