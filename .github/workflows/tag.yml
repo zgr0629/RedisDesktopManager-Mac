@@ -225,10 +225,9 @@ jobs:
         echo "${{ env.FILE }}" > FILE_NAME
         #
         # Load variables from file
-        cat $(cat FILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
-        echo "VERSION=$(cat VERSION)"
+        cat "${{ env.FILE }}" | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
       env:
-        VERSION: cat $(cat FILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g'
+        VERSION: ${VERSION}
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
