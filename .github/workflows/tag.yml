@@ -235,7 +235,7 @@ jobs:
         repository: uglide/RedisDesktopManager
         path: rdm
         submodules: 'recursive'
-        ref: ${{ env.VERSION }}
+        ref: ${{ VERSION }}
 
     - name: build lz4
       run: |
