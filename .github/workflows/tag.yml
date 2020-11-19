@@ -30,7 +30,7 @@ jobs:
           releases-only: true  # We know that all relevant tags have a GitHub release for them.
         id: rdm  # The step ID to refer to later.
         
-      #- run: echo "RDM is at version ${{ steps.rdm.outputs.tag }}"
+      # - run: echo "RDM is at version ${{ steps.rdm.outputs.tag }}"
       - name: Save Variables
         run: |
           # 存变量的文件名
@@ -217,6 +217,8 @@ jobs:
         # Load variables from file
         cat $(cat FILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
         echo "VERSION=${{ VERSION }}"
+      env:
+        VERSION: ${{ VERSION }}
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -224,7 +226,7 @@ jobs:
         repository: uglide/RedisDesktopManager
         path: rdm
         submodules: 'recursive'
-        ref: ${{ VERSION }}
+        ref: ${{ env.VERSION }}
 
     - name: build lz4
       run: |
@@ -288,8 +290,8 @@ jobs:
     - name: build
       id: build
       run: |
-        python ./rdm/build/utils/set_version.py ${{ VERSION }} > ./rdm/src/version.h
-        sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ VERSION }}/" ./rdm/src/rdm.pro
+        python ./rdm/build/utils/set_version.py ${{ env.VERSION }} > ./rdm/src/version.h
+        sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ env.VERSION }}/" ./rdm/src/rdm.pro
         cd rdm/src
         qmake rdm.pro CONFIG-=debug
         make -s -j 8
