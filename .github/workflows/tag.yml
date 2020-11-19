@@ -30,10 +30,10 @@ jobs:
           repository: uglide/RedisDesktopManager  # The repository to scan.
           releases-only: true  # We know that all relevant tags have a GitHub release for them.
         id: rdm  # The step ID to refer to later.
-
-      - run: |
-          env.RDM_REF=$steps.rdm.outputs.tag
-          echo "RDM is at version ${{ env.RDM_REF }}"
+      - name: Latest Tag
+        env:
+          VERSION: ${{ steps.rdm.outputs.tag }}
+      - run: echo "RDM is at version ${{ env.RDM_REF }}"
 
       # - name: checkout
       #   uses: actions/checkout@v2
