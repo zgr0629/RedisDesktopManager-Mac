@@ -32,13 +32,13 @@ jobs:
         
       #- run: echo "RDM is at version ${{ steps.rdm.outputs.tag }}"
       - name: Save Variables
-          run: |
-            # 存变量的文件名
-            echo "${{ env.FILE }}" > FILE_NAME
-            #
-            # SAVE variables to file
-            echo "VERSION=${{ steps.rdm.outputs.tag }}"
-            echo "VERSION=${{ steps.rdm.outputs.tag }}" > FILE_NAME
+        run: |
+          # 存变量的文件名
+          echo "${{ env.FILE }}" > FILE_NAME
+          #
+          # SAVE variables to file
+          echo "VERSION=${{ steps.rdm.outputs.tag }}"
+          echo "VERSION=${{ steps.rdm.outputs.tag }}" > FILE_NAME
 
       # - name: checkout
       #   uses: actions/checkout@v2
