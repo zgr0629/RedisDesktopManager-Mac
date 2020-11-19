@@ -3,7 +3,7 @@
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
 
 # This is a basic workflow to help you get started with Actions
-name: CI for RDM latest release tag.
+name: CI for RDM latest release tag
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -32,7 +32,7 @@ jobs:
         id: rdm  # The step ID to refer to later.
 
       - run: |
-          env.RDM_REF=${{ steps.rdm.outputs.tag }}
+          env.RDM_REF=$steps.rdm.outputs.tag
           echo "RDM is at version ${{ env.RDM_REF }}"
 
       # - name: checkout
