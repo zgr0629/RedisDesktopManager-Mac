@@ -205,7 +205,7 @@ jobs:
         copy /y bin\windows\release\rdm.lib build\windows\installer\resources\rdm.lib
         cd build\windows\installer\resources
         windeployqt.exe --no-angle --no-opengl-sw --no-compiler-runtime --no-translations --release --force --qmldir ../../../../src/qml rdm.exe
-        makensis.exe /V1 /DVERSION=${{ env.VERSION }} ../installer.nsi
+        makensis.exe /V1 /DVERSION=${{ env.VERSION }}.0.0 ../installer.nsi
 
     - name: Upload Release Asset
       id: upload-release-asset 
