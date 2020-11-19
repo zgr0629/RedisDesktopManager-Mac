@@ -216,6 +216,9 @@ jobs:
       with:
         name: variables
 
+    - name: Display structure of downloaded files
+      run: ls -R
+
     - name: Load Variables
       run: |
         # 存变量的文件名
