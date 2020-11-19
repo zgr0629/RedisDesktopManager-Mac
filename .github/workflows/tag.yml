@@ -11,8 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  RDM_REF: 2020
-  VERSION: 2020.99.0
+  FILE: "variables.ini"
   PYTHON_EMBEDDED_VERSION: 3.7.9
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -32,7 +31,14 @@ jobs:
         id: rdm  # The step ID to refer to later.
         
       #- run: echo "RDM is at version ${{ steps.rdm.outputs.tag }}"
-        
+      - name: Save Variables
+          run: |
+            # 存变量的文件名
+            echo "${{ env.FILE }}" > FILE_NAME
+            #
+            # SAVE variables to file
+            echo "VERSION=${{ steps.rdm.outputs.tag }}"
+            echo "VERSION=${{ steps.rdm.outputs.tag }}" > FILE_NAME
 
       # - name: checkout
       #   uses: actions/checkout@v2
@@ -203,13 +209,22 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - name: Load Variables
+        run: |
+          # 存变量的文件名
+          echo "${{ env.FILE }}" > FILE_NAME
+          #
+          # Load variables from file
+          cat $(cat FILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
+          echo "VERSION=${{ VERSION }}"
+
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
         repository: uglide/RedisDesktopManager
         path: rdm
         submodules: 'recursive'
-        ref: ${{ steps.rdm.outputs.tag }}
+        ref: ${{ VERSION }}
 
     - name: build lz4
       run: |
@@ -273,8 +288,8 @@ jobs:
     - name: build
       id: build
       run: |
-        python ./rdm/build/utils/set_version.py ${{ steps.rdm.outputs.tag }} > ./rdm/src/version.h
-        sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ steps.rdm.outputs.tag }}/" ./rdm/src/rdm.pro
+        python ./rdm/build/utils/set_version.py ${{ VERSION }} > ./rdm/src/version.h
+        sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ VERSION }}/" ./rdm/src/rdm.pro
         cd rdm/src
         qmake rdm.pro CONFIG-=debug
         make -s -j 8
