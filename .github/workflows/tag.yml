@@ -31,11 +31,16 @@ jobs:
         id: rdm  # The step ID to refer to later.
         
       # - run: echo "RDM is at version ${{ steps.rdm.outputs.tag }}"
-      - name: Save Variables
+      - name: Save Variables to file
         run: |
           # SAVE variables to file
-          echo "VERSION=${{ steps.rdm.outputs.tag }}"
           echo "VERSION=${{ steps.rdm.outputs.tag }}" > "${{ env.FILE }}"
+
+      - name: Upload file
+          uses: actions/upload-artifact@v1
+          with:
+            name: variables
+            path: ${{ env.FILE }}
 
       # - name: checkout
       #   uses: actions/checkout@v2
@@ -206,6 +211,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - name: Download variables file
+        uses: actions/download-artifact@v1
+        with:
+          name: variables
+
     - name: Load Variables
       run: |
         # 存变量的文件名
