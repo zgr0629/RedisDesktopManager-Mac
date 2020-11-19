@@ -210,13 +210,13 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: Load Variables
-        run: |
-          # 存变量的文件名
-          echo "${{ env.FILE }}" > FILE_NAME
-          #
-          # Load variables from file
-          cat $(cat FILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
-          echo "VERSION=${{ VERSION }}"
+      run: |
+        # 存变量的文件名
+        echo "${{ env.FILE }}" > FILE_NAME
+        #
+        # Load variables from file
+        cat $(cat FILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
+        echo "VERSION=${{ VERSION }}"
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
