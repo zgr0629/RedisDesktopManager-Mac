@@ -37,7 +37,7 @@ jobs:
           echo "VERSION=${{ steps.rdm.outputs.tag }}" > "${{ env.FILE }}"
 
       - name: Upload file
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: variables
           path: ${{ env.FILE }}
@@ -212,10 +212,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: Download variables file
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: variables
-        path: ${{ env.FILE }}
 
     - name: Display structure of downloaded files
       run: ls -R
