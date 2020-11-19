@@ -38,7 +38,7 @@ jobs:
           #
           # SAVE variables to file
           echo "VERSION=${{ steps.rdm.outputs.tag }}"
-          echo "VERSION=${{ steps.rdm.outputs.tag }}" > FILE_NAME
+          echo "VERSION=${{ steps.rdm.outputs.tag }}" > $(cat FILE_NAME)
 
       # - name: checkout
       #   uses: actions/checkout@v2
