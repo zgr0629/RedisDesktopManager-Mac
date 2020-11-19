@@ -337,5 +337,5 @@ jobs:
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }}
         asset_path: rdm/bin/osx/release/RDM.dmg
-        asset_name: RDM.dmg
+        asset_name: RDM.${{ env.VERSION }}.dmg
         asset_content_type: application/dmg
