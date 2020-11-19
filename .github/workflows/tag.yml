@@ -3,7 +3,7 @@
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
 
 # This is a basic workflow to help you get started with Actions
-name: CI for redis desktop manager
+name: CI for RDM latest release tag.
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -12,7 +12,7 @@ on:
 
 env:
   RDM_REF: 2020
-  VERSION: 2020.5
+  VERSION: 2020.99.0
   PYTHON_EMBEDDED_VERSION: 3.7.9
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -24,6 +24,17 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+      # 找到最新的版本号
+      - uses: oprypin/find-latest-tag@v1
+        with:
+          repository: uglide/RedisDesktopManager  # The repository to scan.
+          releases-only: true  # We know that all relevant tags have a GitHub release for them.
+        id: rdm  # The step ID to refer to later.
+
+      - run: |
+          env.RDM_REF=steps.rdm.outputs.tag
+          echo "RDM is at version ${{ env.RDM_REF }}"
+
       # - name: checkout
       #   uses: actions/checkout@v2
       #   with:
@@ -33,7 +44,7 @@ jobs:
       - uses: dev-drprasad/delete-tag-and-release@v0.1.2
         with:
           delete_release: true # default: false
-          tag_name: ${{ env.RDM_REF }}-nightly # tag name to delete
+          tag_name: ${{ env.RDM_REF }} # tag name to delete
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -43,10 +54,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ env.RDM_REF }}-nightly
-          release_name: v${{ env.RDM_REF }}-nightly
+          tag_name: ${{ env.RDM_REF }}
+          release_name: v${{ env.RDM_REF }}
           body: |
-            ${{ env.RDM_REF }}-nightly
+            ${{ env.RDM_REF }}
           draft: false
           prerelease: true
 
@@ -142,7 +153,7 @@ jobs:
       env:
         vc_arch: ${{ matrix.msvc_arch }}
       run: |
-        python rdm\build\utils\set_version.py ${{ env.VERSION }} > rdm\src\version.h
+        python rdm\build\utils\set_version.py ${{ env.RDM_REF }} > rdm\src\version.h
         cd rdm\src
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
         qmake rdm.pro CONFIG-=debug
@@ -189,7 +200,7 @@ jobs:
 
   build_on_osx:
     needs: create_release
-    runs-on: macos-latest
+    runs-on: macos-10.15
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
