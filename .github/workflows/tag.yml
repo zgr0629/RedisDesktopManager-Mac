@@ -221,12 +221,9 @@ jobs:
 
     - name: Load Variables
       run: |
-        # 存变量的文件名
-        echo "${{ env.FILE }}" > FILE_NAME
-        #
         # Load variables from file
-        cat "${{ env.FILE }}" | grep -o "VERSION=.*" | head -n 1 | sed 's/VERSION=//g' > VERSION
-        echo "action_state=$VERSION" >> $GITHUB_ENV
+        VERSION=$(cat "${{ env.FILE }}" | grep -o "VERSION=.*" | head -n 1 | sed 's/VERSION=//g')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
