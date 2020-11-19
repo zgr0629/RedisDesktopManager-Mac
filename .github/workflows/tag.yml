@@ -28,14 +28,13 @@ jobs:
         with:
           repository: uglide/RedisDesktopManager  # The repository to scan.
           releases-only: true  # We know that all relevant tags have a GitHub release for them.
-        id: rdm  # The step ID to refer to later.
-        
-      # - run: echo "RDM is at version ${{ steps.rdm.outputs.tag }}"
+        id: latest_tag  # The step ID to refer to later.
+
       - name: Save Variables to file
         run: |
           # SAVE variables to file
-          echo "${{ steps.rdm.outputs.tag }}" > "${{ env.VERSION_FILE }}"
-          echo "VERSION=${{ steps.rdm.outputs.tag }}" >> $GITHUB_ENV
+          echo "${{ steps.latest_tag.outputs.tag }}" > "${{ env.VERSION_FILE }}"
+          echo "VERSION=${{ steps.latest_tag.outputs.tag }}" >> $GITHUB_ENV
 
       - name: Upload file
         uses: actions/upload-artifact@v2
@@ -97,8 +96,7 @@ jobs:
     - name: Load Variables
       run: |
         # Load variables from file
-        set VERSION='type "${{ env.VERSION_FILE }}"'
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        echo "VERSION='type ${{ env.VERSION_FILE }}'" >> $GITHUB_ENV
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
