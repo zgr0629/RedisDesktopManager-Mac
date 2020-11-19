@@ -97,8 +97,7 @@ jobs:
       run: |
         # Load variables from file
         set vs='type ${{ env.VERSION_FILE }}'
-        echo "VERSION=%vs%" >> %GITHUB_ENV%
-        echo "action_state=yellow" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+        echo "VERSION=%vs%" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
