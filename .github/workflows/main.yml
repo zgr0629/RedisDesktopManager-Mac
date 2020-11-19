@@ -8,18 +8,7 @@ name: CI for redis desktop manager
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
-    branches: [ pre-release ]
-    paths-ignore: 
-      - 'README.md'
-      - 'LICENSE'
-  pull_request:
-    branches: [ pre-release ]
-    paths-ignore: 
-      - 'README.md'
-      - 'LICENSE'
-  schedule:
-    - cron: '0 22 * * *' # Runs at 22:00 UTC every day
+  workflow_dispatch:
 
 env:
   RDM_REF: 2020
