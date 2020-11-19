@@ -35,7 +35,7 @@ jobs:
         run: |
           # SAVE variables to file
           echo "VERSION=${{ steps.rdm.outputs.tag }}" > "${{ env.FILE }}"
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "VERSION=${{ steps.rdm.outputs.tag }}" >> $GITHUB_ENV
 
       - name: Upload file
         uses: actions/upload-artifact@v2
