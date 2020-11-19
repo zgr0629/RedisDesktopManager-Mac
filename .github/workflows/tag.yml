@@ -35,6 +35,7 @@ jobs:
         run: |
           # SAVE variables to file
           echo "VERSION=${{ steps.rdm.outputs.tag }}" > "${{ env.FILE }}"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Upload file
         uses: actions/upload-artifact@v2
@@ -51,7 +52,7 @@ jobs:
       - uses: dev-drprasad/delete-tag-and-release@v0.1.2
         with:
           delete_release: true # default: false
-          tag_name: ${{ steps.rdm.outputs.tag }} # tag name to delete
+          tag_name: ${{ env.VERSION }} # tag name to delete
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -61,10 +62,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ steps.rdm.outputs.tag }}
-          release_name: v${{ steps.rdm.outputs.tag }}
+          tag_name: ${{ env.VERSION }}
+          release_name: v${{ env.VERSION }}
           body: |
-            ${{ steps.rdm.outputs.tag }}
+            ${{ env.VERSION }}
           draft: false
           prerelease: true
 
@@ -85,13 +86,27 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Download variables file
+        uses: actions/download-artifact@v2
+        with:
+          name: variables
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      - name: Load Variables
+        run: |
+          # Load variables from file
+          VERSION=$(cat "${{ env.FILE }}" | grep -o "VERSION=.*" | head -n 1 | sed 's/VERSION=//g')
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
         repository: uglide/RedisDesktopManager
         path: rdm
         submodules: 'recursive'
-        ref: ${{ steps.rdm.outputs.tag }}
+        ref: ${{ env.VERSION }}
 
     # install QT   
     - name: install QT
@@ -160,7 +175,7 @@ jobs:
       env:
         vc_arch: ${{ matrix.msvc_arch }}
       run: |
-        python rdm\build\utils\set_version.py ${{ steps.rdm.outputs.tag }} > rdm\src\version.h
+        python rdm\build\utils\set_version.py ${{ env.VERSION }} > rdm\src\version.h
         cd rdm\src
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
         qmake rdm.pro CONFIG-=debug
@@ -191,7 +206,7 @@ jobs:
         copy /y bin\windows\release\rdm.lib build\windows\installer\resources\rdm.lib
         cd build\windows\installer\resources
         windeployqt.exe --no-angle --no-opengl-sw --no-compiler-runtime --no-translations --release --force --qmldir ../../../../src/qml rdm.exe
-        makensis.exe /V1 /DVERSION=${{ steps.rdm.outputs.tag }} ../installer.nsi
+        makensis.exe /V1 /DVERSION=${{ env.VERSION }} ../installer.nsi
 
     - name: Upload Release Asset
       id: upload-release-asset 
@@ -201,8 +216,8 @@ jobs:
       with:
         # upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         upload_url: ${{ needs.create_release.outputs.upload_url }}
-        asset_path: rdm/build/windows/installer/rdm-${{ steps.rdm.outputs.tag }}.exe
-        asset_name: rdm-${{ steps.rdm.outputs.tag }}.exe
+        asset_path: rdm/build/windows/installer/rdm-${{ env.VERSION }}.exe
+        asset_name: rdm-${{ env.VERSION }}.exe
         asset_content_type: application/vnd.microsoft.portable-executable
 
   build_on_osx:
