@@ -30,7 +30,7 @@ Download latest DMG file from [release](https://github.com/zgr0629/RedisDesktopM
 
 If you have any questions, please feel free to submit an issue.
 
-##Update for Big Sur
+## Update for Big Sur
 
 Big sur is missing CoreFoundation, this `rmd.sh` will meet an error like:
 
