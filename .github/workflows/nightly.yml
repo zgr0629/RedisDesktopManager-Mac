@@ -234,7 +234,7 @@ jobs:
     
     - name: setup python
       run: |
-        brew unlink python@3.8
+        brew unlink python@3.9
         brew install python@3.7
         brew link --force python@3.7
     
