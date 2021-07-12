@@ -12,7 +12,8 @@ on:
 
 env:
   VERSION_FILE: "version.ini"
-  PYTHON_EMBEDDED_VERSION: 3.7.9
+  PY_LIB_VERSION: 38
+  PYTHON_EMBEDDED_VERSION: 3.8.10
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -142,7 +143,7 @@ jobs:
     # install python3
     - name: install python37
       shell: cmd
-      run: mklink /d C:\Python37-x64 C:\hostedtoolcache\windows\python\3.7.9\x64
+      run: mklink /d C:\Python${{ env.PY_LIB_VERSION }}-x64 C:\hostedtoolcache\windows\python\${{ env.PYTHON_EMBEDDED_VERSION }}\x64
 
     # pip install
     - name: pip install
@@ -177,7 +178,7 @@ jobs:
         python rdm\build\utils\set_version.py ${{ env.VERSION }} > rdm\src\version.h
         cd rdm\src
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
-        qmake rdm.pro CONFIG-=debug
+        qmake rdm.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
         nmake
 
     # 缺少python37.dll
@@ -189,7 +190,7 @@ jobs:
       run: |
         cd rdm\build\windows\installer\resources
         wget "https://www.python.org/ftp/python/${{ env.PYTHON_EMBEDDED_VERSION }}/python-${{ env.PYTHON_EMBEDDED_VERSION }}-embed-amd64.zip" -outfile "python-embed.zip"
-        7z.exe x python-embed.zip python37.zip python3.dll python37.dll unicodedata.pyd _bz2.pyd
+        7z.exe x python-embed.zip python${{ env.PY_LIB_VERSION }}.zip python3.dll python${{ env.PY_LIB_VERSION }}.dll unicodedata.pyd _bz2.pyd
         del python-embed.zip
 
     # windeployqt
@@ -311,7 +312,7 @@ jobs:
         python ./rdm/build/utils/set_version.py ${{ env.VERSION }} > ./rdm/src/version.h
         sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ env.VERSION }}/" ./rdm/src/rdm.pro
         cd rdm/src
-        qmake rdm.pro CONFIG-=debug
+        qmake rdm.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
         make -s -j 8
 
     - name: copy translations
