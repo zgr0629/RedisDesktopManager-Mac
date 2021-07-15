@@ -18,7 +18,7 @@ env:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   create_release:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjobs_idoutputs
     # Map a step output to a job output
     outputs:
@@ -266,11 +266,11 @@ jobs:
         cd rdm
         cd ./src && cp ./resources/Info.plist.sample ./resources/Info.plist
     
-    - name: setup python
-      run: |
-        brew unlink python@3.9
-        brew install python@3.7
-        brew link --overwrite python@3.7
+    #- name: setup python
+    #  run: |
+    #    brew unlink python@3.9
+    #    brew install python@3.7
+    #    brew link --overwrite python@3.7
     
     # 使用私有库,egg-links时-t不能同时使用，--user解决权限问题
     # https://github.com/UnitedIncome/serverless-python-requirements/issues/240
