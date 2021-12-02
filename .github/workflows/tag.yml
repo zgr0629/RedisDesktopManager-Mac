@@ -14,6 +14,7 @@ env:
   VERSION_FILE: "version.ini"
   PY_LIB_VERSION: 38
   PYTHON_EMBEDDED_VERSION: 3.8.10
+  CMAKE_VS: Visual Studio 16 2019
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -130,7 +131,25 @@ jobs:
       run: |
         cd rdm/3rdparty/lz4/build/cmake
         cmake -G "Visual Studio 16 2019" -A x64 -DLZ4_BUNDLED_MODE=ON -DBUILD_SHARED_LIBS=ON -B .
-        tree . /f
+        cmake --build . --config Release
+
+    - name: build zstd
+      run: |
+        cd rdm/3rdparty/zstd/build/cmake
+        cmake -G "${{ env.CMAKE_VS }}" -A x64 -B .
+        cmake --build . --config Release
+
+    - name: build snappy
+      run: |
+        cd rdm/3rdparty/snappy
+        cmake -G "${{ env.CMAKE_VS }}" -A x64 -B .
+        cmake --build . --config Release
+
+    - name: build brotli
+      run: |
+        cd rdm/3rdparty/brotli
+        cmake -G "${{ env.CMAKE_VS }}" -A x64 -B .
+        cmake -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
 
 #    # install python3  
@@ -141,7 +160,7 @@ jobs:
 #        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
 
     # install python3
-    - name: install python37
+    - name: install python3
       shell: cmd
       run: mklink /d C:\Python${{ env.PY_LIB_VERSION }}-x64 C:\hostedtoolcache\windows\python\${{ env.PYTHON_EMBEDDED_VERSION }}\x64
 
@@ -181,9 +200,9 @@ jobs:
         qmake rdm.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
         nmake
 
-    # 缺少python37.dll
+    # 缺少python3.dll
     # fix formatter error, unicodedata _bz2
-    - name: add python37.dll
+    - name: add python3.dll
       shell: powershell
 #      env:
 #        PYTHON_EMBEDDED_VERSION: ${{ env.PYTHON_EMBEDDED_VERSION }}
@@ -222,7 +241,7 @@ jobs:
 
   build_on_osx:
     needs: create_release
-    runs-on: macos-10.15
+    runs-on: macos-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -254,6 +273,29 @@ jobs:
         ls
         make -s -j 8
 
+    - name: build zstd
+      run: |
+        cd rdm/3rdparty/zstd/build/cmake
+        cmake . && make
+
+    - name: build snappy
+      run: |
+        cd rdm/3rdparty/snappy
+        cmake . && make
+
+    - name: build brotli
+      run: |
+        cd rdm/3rdparty/brotli
+        cmake -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release
+
+    - name: setup python
+      run: |
+        brew unlink python@3.10
+        brew unlink python@3.9
+        brew reinstall python@3.9
+        brew link --overwrite python@3.9
+
     # install QT   
     - name: install QT
       uses: jurplel/install-qt-action@v2
@@ -268,9 +310,9 @@ jobs:
     
     #- name: setup python
     #  run: |
-    #    brew unlink python@3.9
-    #    brew install python@3.7
-    #    brew link --overwrite python@3.7
+    #    brew unlink python@3.10
+    #    brew install python@3.9
+    #    brew link --overwrite python@3.9
     
     # 使用私有库,egg-links时-t不能同时使用，--user解决权限问题
     # https://github.com/UnitedIncome/serverless-python-requirements/issues/240
