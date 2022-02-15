@@ -159,13 +159,13 @@ jobs:
         forfiles /p "." /s /m *.egg-info /c "cmd /c if @isdir==TRUE rd /s /q @file 2>nul" 2>nul | exit /b 0
 
     # https://doc.qt.io/qt-5/linguist-manager.html
-    # lupdate rdm.pro
+    # lupdate resp.pro
     - name: translations
       shell: cmd
       run: |
         cd rdm\src
-        lupdate rdm.pro
-        lrelease -verbose rdm.pro
+        lupdate resp.pro
+        lrelease -verbose resp.pro
         xcopy resources\translations\*.qm ..\build\windows\installer\resources\translations /s /i
 
     # Runs a single command using the runners shell
@@ -177,7 +177,7 @@ jobs:
         python rdm\build\utils\set_version.py ${{ env.VERSION }} > rdm\src\version.h
         cd rdm\src
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
-        qmake rdm.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
+        qmake resp.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
         nmake
 
     # 缺少python3.dll
@@ -305,8 +305,8 @@ jobs:
     - name: release translations
       run: |
         cd rdm/src
-        lupdate rdm.pro
-        lrelease -verbose rdm.pro
+        lupdate resp.pro
+        lrelease -verbose resp.pro
 
     # brew install tree && tree -a
     # 去掉initUpdater不然报Please download new version of Redis Desktop Manager，不能使用
@@ -320,7 +320,7 @@ jobs:
       run: |
         # python ./rdm/build/utils/set_version.py ${{ env.VERSION }} > ./rdm/src/version.h
         cd rdm/src
-        qmake rdm.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
+        qmake resp.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
         make -s -j 8
 
     - name: copy translations
