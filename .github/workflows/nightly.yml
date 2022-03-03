@@ -23,8 +23,8 @@ on:
     - cron: '0 22 * * *' # Runs at 22:00 UTC every day
 
 env:
-  RDM_REF: 2021
-  VERSION: 2021.99.0
+  RDM_REF: 2022
+  VERSION: 2022.99.0
   PY_LIB_VERSION: 38
   PYTHON_EMBEDDED_VERSION: 3.8.10
   CMAKE_VS: Visual Studio 16 2019
