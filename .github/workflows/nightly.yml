@@ -97,10 +97,10 @@ jobs:
         modules: 'qtcharts'
         setup-python: 'false'
 
-    - name : fix compilation
-      run: |
-        cd resp/3rdparty/qredisclient/3rdparty/hiredis
-        git apply ../hiredis-win.patch
+#     - name : fix compilation
+#       run: |
+#         cd resp/3rdparty/qredisclient/3rdparty/hiredis
+#         git apply ../hiredis-win.patch
 
     - name: install zlib
       run: |
