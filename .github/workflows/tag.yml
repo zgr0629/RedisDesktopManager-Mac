@@ -72,17 +72,6 @@ jobs:
 
   build_on_windows:
     needs: create_release
-    strategy:
-      matrix:
-        #configuration: [Debug, Release]
-        configuration: [Release]
-        qt_target: [Desktop]
-        qt_arch: [win64_msvc2019_64]
-        # 额外设置msvc_arch
-        include:
-          - qt_arch: win64_msvc2019_64
-            msvc_arch: x64
-
     runs-on: windows-2019
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -115,12 +104,11 @@ jobs:
       with: 
         version: '5.15.1'
         modules: 'qtcharts'
-        setup-python: 'false'
-        
-#    - name : fix compilation
-#      run: |
-#        cd resp/3rdparty/qredisclient/3rdparty/hiredis
-#        git apply ../hiredis-win.patch
+
+#     - name : fix compilation
+#       run: |
+#         cd resp/3rdparty/qredisclient/3rdparty/hiredis
+#         git apply ../hiredis-win.patch
 
     - name: install zlib
       run: |
@@ -131,7 +119,7 @@ jobs:
     - name: build lz4
       run: |
         cd resp/3rdparty/lz4/build/cmake
-        cmake -G "Visual Studio 16 2019" -A x64 -DLZ4_BUNDLED_MODE=ON -DBUILD_SHARED_LIBS=ON -B .
+        cmake -G "${{ env.CMAKE_VS }}" -A x64 -DLZ4_BUNDLED_MODE=ON -DBUILD_SHARED_LIBS=ON -B .
         cmake --build . --config Release
 
     - name: build zstd
@@ -193,7 +181,7 @@ jobs:
     - name: build
       shell: cmd
       env:
-        vc_arch: ${{ matrix.msvc_arch }}
+        vc_arch: x64
       run: |
         python resp\build\utils\set_version.py ${{ env.VERSION }} > resp\src\version.h
         cd resp\src
@@ -217,7 +205,7 @@ jobs:
     # https://doc.qt.io/qt-5/windows-deployment.html
     # windeployqt.exe --force --qmldir ${{ env.QML2_IMPORT_PATH }} resp.exe
     - name: package
-      id: pacage
+      id: package
       shell: cmd
       run: |
         cd resp
@@ -293,13 +281,19 @@ jobs:
     - name: setup python
       run: |
         brew unlink python@3.10
-        #brew unlink python@3.9
         brew reinstall python@3.9
+        brew unlink python@3.9
         brew link --overwrite python@3.9
+
+    # install python3  
+    - name: install Python3
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
 
     # install QT   
     - name: install QT
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
       with: 
         version: '5.15.1'
         modules: 'qtcharts'
