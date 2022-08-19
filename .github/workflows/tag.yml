@@ -347,7 +347,7 @@ jobs:
     - name: build
       id: build
       run: |
-        python ./resp/build/utils/set_version.py ${{ env.VERSION }} > ./resp/src/version.h
+        # python ./resp/build/utils/set_version.py ${{ env.VERSION }} > ./resp/src/version.h
         sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ env.VERSION }}/" ./resp/src/resp.pro
         cd resp/src
         qmake resp.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
