@@ -185,7 +185,7 @@ jobs:
     # https://doc.qt.io/qt-5/windows-deployment.html
     # windeployqt.exe --force --qmldir ${{ env.QML2_IMPORT_PATH }} resp.exe
     - name: package
-      id: pacage
+      id: package
       shell: cmd
       run: |
         cd resp
@@ -248,13 +248,19 @@ jobs:
     - name: setup python
       run: |
         brew unlink python@3.10
-        brew unlink python@3.9
         brew reinstall python@3.9
+        brew unlink python@3.9
         brew link --overwrite python@3.9
+
+    # install python3  
+    - name: install Python3
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
 
     # install QT   
     - name: install QT
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
       with: 
         version: '5.15.1'
         modules: 'qtcharts'
