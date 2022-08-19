@@ -266,17 +266,17 @@ jobs:
       run: |
         cd resp/3rdparty/zstd/build/cmake
         cmake . && make
-
-    - name: build snappy
-      run: |
-        cd resp/3rdparty/snappy
-        cmake . && make
-
+        
     - name: build brotli
       run: |
         cd resp/3rdparty/brotli
-        cmake -DCMAKE_BUILD_TYPE=Release
+        cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
+        
+    - name: build snappy
+      run: |
+        cd resp/3rdparty/snappy
+        cmake -DHAVE_LIBLZO2=0 -DHAVE_LIBLZ4=0 . && make
 
     - name: setup python
       run: |
@@ -291,7 +291,7 @@ jobs:
       with:
         python-version: '3.8'
 
-    # install QT   
+    # install QT
     - name: install QT
       uses: jurplel/install-qt-action@v3
       with: 
@@ -347,7 +347,7 @@ jobs:
     - name: build
       id: build
       run: |
-        # python ./resp/build/utils/set_version.py ${{ env.VERSION }} > ./resp/src/version.h
+        python ./resp/build/utils/set_version.py ${{ env.VERSION }} > ./resp/src/version.h
         sed -i "" "/^\( *\)VERSION=.*/s//\1VERSION=${{ env.VERSION }}/" ./resp/src/resp.pro
         cd resp/src
         qmake resp.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
