@@ -266,32 +266,26 @@ jobs:
       run: |
         cd resp/3rdparty/zstd/build/cmake
         cmake . && make
-        
-    - name: build brotli
-      run: |
-        cd resp/3rdparty/brotli
-        cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release
-        cmake --build . --config Release
-        
+
     - name: build snappy
       run: |
         cd resp/3rdparty/snappy
-        cmake -DHAVE_LIBLZO2=0 -DHAVE_LIBLZ4=0 . && make
+        cmake . && make
+
+    - name: build brotli
+      run: |
+        cd resp/3rdparty/brotli
+        cmake -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release
 
     - name: setup python
       run: |
         brew unlink python@3.10
-        brew reinstall python@3.8
-        brew unlink python@3.8
-        brew link --overwrite python@3.8
+        brew reinstall python@3.9
+        brew link --overwrite python@3.9
+        brew link python3
 
-    # install python3  
-    - name: install Python3
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-
-    # install QT
+    # install QT   
     - name: install QT
       uses: jurplel/install-qt-action@v3
       with: 
