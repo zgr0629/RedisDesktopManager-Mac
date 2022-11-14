@@ -254,6 +254,10 @@ jobs:
         path: resp
         submodules: 'recursive'
         ref: ${{ env.VERSION }}
+    - name: update submodules
+      run: |
+        cd resp
+        git submodule update --remote
 
     - name: build lz4
       run: |
@@ -278,12 +282,13 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
 
-    - name: setup python
-      run: |
-        brew unlink python@3.10
-        brew reinstall python@3.9
-        brew link --overwrite python@3.9
-        brew link python3
+#     - name: setup python
+#       run: |
+#         brew unlink python@3.11
+#         brew unlink python@3.10
+#         brew reinstall python@3.9
+#         brew link --overwrite python@3.9
+#         brew link python3
 
     # install QT   
     - name: install QT
