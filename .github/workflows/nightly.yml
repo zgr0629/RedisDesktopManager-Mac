@@ -8,6 +8,7 @@ name: Build nightly version
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
+  workflow_dispatch:
   push:
     branches: [ pre-release ]
     paths-ignore: 
@@ -22,7 +23,7 @@ on:
     - cron: '0 22 * * *' # Runs at 22:00 UTC every day
 
 env:
-  RESP_REF: 2022
+  RDM_REF: 2022
   VERSION: 2022.99.0
   PY_LIB_VERSION: 38
   PYTHON_EMBEDDED_VERSION: 3.8.10
@@ -46,7 +47,7 @@ jobs:
       - uses: dev-drprasad/delete-tag-and-release@v0.1.2
         with:
           delete_release: true # default: false
-          tag_name: ${{ env.RESP_REF }}-nightly # tag name to delete
+          tag_name: ${{ env.RDM_REF }}-nightly # tag name to delete
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -56,10 +57,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ env.RESP_REF }}-nightly
-          release_name: v${{ env.RESP_REF }}-nightly
+          tag_name: ${{ env.RDM_REF }}-nightly
+          release_name: v${{ env.RDM_REF }}-nightly
           body: |
-            ${{ env.RESP_REF }}-nightly
+            ${{ env.RDM_REF }}-nightly
           draft: false
           prerelease: true
 
@@ -73,9 +74,9 @@ jobs:
     - uses: actions/checkout@v2
       with:
         repository: uglide/RedisDesktopManager
-        path: resp
+        path: rdm
         submodules: 'recursive'
-        ref: ${{ env.RESP_REF }}
+        ref: ${{ env.RDM_REF }}
 
     # install QT   
     - name: install QT
@@ -86,36 +87,36 @@ jobs:
 
 #     - name : fix compilation
 #       run: |
-#         cd resp/3rdparty/qredisclient/3rdparty/hiredis
+#         cd rdm/3rdparty/qredisclient/3rdparty/hiredis
 #         git apply ../hiredis-win.patch
 
     - name: install zlib
       run: |
-        cd resp/3rdparty
+        cd rdm/3rdparty
         nuget install zlib-msvc14-x64 -Version 1.2.11.7795
 
     # from https://github.com/lework/RedisDesktopManager-Windows
     - name: build lz4
       run: |
-        cd resp/3rdparty/lz4/build/cmake
+        cd rdm/3rdparty/lz4/build/cmake
         cmake -G "${{ env.CMAKE_VS }}" -A x64 -DLZ4_BUNDLED_MODE=ON -DBUILD_SHARED_LIBS=ON -B .
         cmake --build . --config Release
 
     - name: build zstd
       run: |
-        cd resp/3rdparty/zstd/build/cmake
+        cd rdm/3rdparty/zstd/build/cmake
         cmake -G "${{ env.CMAKE_VS }}" -A x64 -B .
         cmake --build . --config Release
 
     - name: build snappy
       run: |
-        cd resp/3rdparty/snappy
+        cd rdm/3rdparty/snappy
         cmake -G "${{ env.CMAKE_VS }}" -A x64 -B .
         cmake --build . --config Release
 
     - name: build brotli
       run: |
-        cd resp/3rdparty/brotli
+        cd rdm/3rdparty/brotli
         cmake -G "${{ env.CMAKE_VS }}" -A x64 -B .
         cmake -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
@@ -136,8 +137,8 @@ jobs:
     - name: pip install
       shell: cmd
       run: |
-        cd resp\build\windows\installer\resources
-        xcopy %GITHUB_WORKSPACE%\resp\src\py . /s /i
+        cd rdm\build\windows\installer\resources
+        xcopy %GITHUB_WORKSPACE%\rdm\src\py . /s /i
         mkdir Lib\site-packages
         pip3 install -t Lib\site-packages -r requirements.txt
         python -m compileall -b .
@@ -151,7 +152,7 @@ jobs:
     - name: translations
       shell: cmd
       run: |
-        cd resp\src
+        cd rdm\src
         lupdate resp.pro
         lrelease -verbose resp.pro
         xcopy resources\translations\*.qm ..\build\windows\installer\resources\translations /s /i
@@ -162,8 +163,8 @@ jobs:
       env:
         vc_arch: x64
       run: |
-        python resp\build\utils\set_version.py ${{ env.VERSION }} > resp\src\version.h
-        cd resp\src
+        python rdm\build\utils\set_version.py ${{ env.VERSION }} > rdm\src\version.h
+        cd rdm\src
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" %vc_arch%
         qmake resp.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
         nmake
@@ -175,7 +176,7 @@ jobs:
 #      env:
 #        PYTHON_EMBEDDED_VERSION: ${{ env.PYTHON_EMBEDDED_VERSION }}
       run: |
-        cd resp\build\windows\installer\resources
+        cd rdm\build\windows\installer\resources
         wget "https://www.python.org/ftp/python/${{ env.PYTHON_EMBEDDED_VERSION }}/python-${{ env.PYTHON_EMBEDDED_VERSION }}-embed-amd64.zip" -outfile "python-embed.zip"
         7z.exe x python-embed.zip python${{ env.PY_LIB_VERSION }}.zip python3.dll python${{ env.PY_LIB_VERSION }}.dll unicodedata.pyd _bz2.pyd
         del python-embed.zip
@@ -187,7 +188,7 @@ jobs:
       id: package
       shell: cmd
       run: |
-        cd resp
+        cd rdm
         copy /y bin\windows\release\resp.exe build\windows\installer\resources\resp.exe
         copy /y bin\windows\release\resp.exp build\windows\installer\resources\resp.exp
         copy /y bin\windows\release\resp.lib build\windows\installer\resources\resp.lib
@@ -203,7 +204,7 @@ jobs:
       with:
         # upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         upload_url: ${{ needs.create_release.outputs.upload_url }}
-        asset_path: resp/build/windows/installer/resp-${{ env.VERSION }}.exe
+        asset_path: rdm/build/windows/installer/resp-${{ env.VERSION }}.exe
         asset_name: resp-${{ env.VERSION }}.exe
         asset_content_type: application/vnd.microsoft.portable-executable
 
@@ -217,36 +218,36 @@ jobs:
     - uses: actions/checkout@v2
       with:
         repository: uglide/RedisDesktopManager
-        path: resp
+        path: rdm
         submodules: 'recursive'
-        ref: ${{ env.RESP_REF }}
+        ref: ${{ env.RDM_REF }}
 
     - name: update submodules
       run: |
-        cd resp
+        cd rdm
         git submodule update --remote
 
     - name: build lz4
       run: |
-        cd resp/3rdparty/lz4/build/cmake
+        cd rdm/3rdparty/lz4/build/cmake
         cmake -DLZ4_BUNDLED_MODE=ON -DBUILD_SHARED_LIBS=ON
         ls
         make -s -j 8
 
     - name: build zstd
       run: |
-        cd resp/3rdparty/zstd/build/cmake
+        cd rdm/3rdparty/zstd/build/cmake
         cmake . && make
 
     - name: build snappy
       run: |
-        cd resp/3rdparty/snappy
+        cd rdm/3rdparty/snappy
         git submodule update --remote
         cmake . && make
 
     - name: build brotli
       run: |
-        cd resp/3rdparty/brotli
+        cd rdm/3rdparty/brotli
         cmake -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
 
@@ -268,7 +269,7 @@ jobs:
 
     - name: copy info.plist
       run: |
-        cd resp
+        cd rdm
         cd ./src && cp ./resources/Info.plist.sample ./resources/Info.plist
 
 #     - name: setup python
@@ -282,13 +283,13 @@ jobs:
     # https://github.com/pypa/pip/issues/4390
     # https://github.com/pypa/pip/issues/4139
     # https://github.com/pypa/pip/issues/562
-    # sudo pip3 install --prefix . -r $GITHUB_WORKSPACE/resp/src/py/requirements.txt
-    # sudo pip3 install -t . -r $GITHUB_WORKSPACE/resp/src/py/requirements.txt
+    # sudo pip3 install --prefix . -r $GITHUB_WORKSPACE/rdm/src/py/requirements.txt
+    # sudo pip3 install -t . -r $GITHUB_WORKSPACE/rdm/src/py/requirements.txt
     - name: pip install
       run: |
-        cd resp
+        cd rdm
         mkdir -p bin/osx/release && cd bin/osx/release
-        cp -Rf $GITHUB_WORKSPACE/resp/src/py .
+        cp -Rf $GITHUB_WORKSPACE/rdm/src/py .
         cd py
         echo six >> requirements.txt
         sudo pip3 install -t . -r requirements.txt
@@ -300,7 +301,7 @@ jobs:
 
     - name: release translations
       run: |
-        cd resp/src
+        cd rdm/src
         lupdate resp.pro
         lrelease -verbose resp.pro
 
@@ -314,20 +315,20 @@ jobs:
     - name: build
       id: build
       run: |
-        cd resp/src
+        cd rdm/src
         qmake resp.pro CONFIG-=debug "VERSION=${{ env.VERSION }}"
         make -s -j 8
 
     - name: copy translations
       run: |
-        cd resp/src
+        cd rdm/src
         mkdir ../bin/osx/release/RESP.app/Contents/translations
         cp -f ./resources/translations/*.qm ../bin/osx/release/RESP.app/Contents/translations
 
     - name: package
       id: package
       run: |
-        cd resp/bin/osx/release
+        cd rdm/bin/osx/release
         zip -q -r release.zip .
         cp -Rf py ./RESP.app/Contents/Resources/
         otool -L ./RESP.app/Contents/MacOS/RESP
@@ -340,6 +341,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }}
-        asset_path: resp/bin/osx/release/RESP.dmg
+        asset_path: rdm/bin/osx/release/RESP.dmg
         asset_name: RESP.dmg
         asset_content_type: application/dmg
