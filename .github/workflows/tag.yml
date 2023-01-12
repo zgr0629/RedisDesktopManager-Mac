@@ -254,10 +254,11 @@ jobs:
         path: resp
         submodules: 'recursive'
         ref: ${{ env.VERSION }}
-    - name: update submodules
-      run: |
-        cd resp
-        git submodule update --remote
+
+#    - name: update submodules
+#      run: |
+#        cd resp
+#        git submodule update --remote
 
     - name: build lz4
       run: |
@@ -280,8 +281,9 @@ jobs:
     - name: build brotli
       run: |
         cd resp/3rdparty/brotli
-        cmake -DCMAKE_BUILD_TYPE=Release
-        cmake --build . --config Release
+        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
+#        cmake -DCMAKE_BUILD_TYPE=Release
+#        cmake --build . --config Release
 
 #     - name: setup python
 #       run: |
