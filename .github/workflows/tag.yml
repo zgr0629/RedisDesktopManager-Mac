@@ -282,8 +282,8 @@ jobs:
       run: |
         cd resp/3rdparty/brotli
         cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
-#        cmake -DCMAKE_BUILD_TYPE=Release
-#        cmake --build . --config Release
+        cmake --build . --config Release --target install
+
 
 #     - name: setup python
 #       run: |
